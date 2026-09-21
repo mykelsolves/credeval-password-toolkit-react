@@ -32,9 +32,35 @@ describe('analyzePassword', () => {
     expect(typeof result?.crackTimeDisplay).toBe('string')
   })
 
+  it('should recognize common words when estimating crack time', () => {
+    const result = analyzePassword('hello')
+    expect(result?.crackTimeDisplay).toBe('1 hour')
+  })
+
   it('should return suggestions array', () => {
     const result = analyzePassword('weak')
     expect(Array.isArray(result?.suggestions)).toBe(true)
+  })
+
+  it('should expose the same warning and suggestions as label feedback', () => {
+    const result = analyzePassword('password')
+    const messages = [result?.warning, ...(result?.suggestions ?? [])]
+      .filter(Boolean)
+      .filter((message, index, allMessages) => allMessages.indexOf(message) === index)
+
+    const expectedFeedback =
+      messages.join(' ') ||
+      (result?.score === 4
+        ? 'This password is strong.'
+        : 'Use a longer and less predictable password.')
+
+    expect(result?.feedback).toBe(expectedFeedback)
+  })
+
+  it('should always provide feedback for a non-empty password', () => {
+    const result = analyzePassword('P@ssw0rd!Str0ngPassword123!@#')
+
+    expect(result?.feedback).toBeTruthy()
   })
 
   it('should give higher score to stronger passwords', () => {
@@ -61,6 +87,14 @@ describe('analyzePassword', () => {
   it('should detect common patterns', () => {
     const result = analyzePassword('qwerty')
     expect(result?.warning).toBeDefined()
+  })
+
+  it('should omit the keyboard direction suggestion from feedback', () => {
+    const result = analyzePassword('qwerty')
+
+    expect(result?.feedback).not.toContain(
+      'Use longer keyboard patterns and change typing direction multiple times.'
+    )
   })
 
   it('score should always be 0-4', () => {

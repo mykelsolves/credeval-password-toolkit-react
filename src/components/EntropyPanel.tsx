@@ -1,110 +1,83 @@
-import type { EntropyResult } from '../lib/types'
+import type { EntropyResult } from "../lib/types";
 
-const SCORE_LABELS = ['Very weak', 'Weak', 'Fair', 'Good', 'Strong']
-const SCORE_COLORS = ['var(--weak)', 'var(--weak)', 'var(--fair)', 'var(--good)', 'var(--strong)']
+const SCORE_LABELS = ["Very weak", "Weak", "Fair", "Good", "Strong"];
+const SCORE_TEXT_CLASSES = [
+  "text-(--weak)",
+  "text-(--weak)",
+  "text-(--fair)",
+  "text-(--good)",
+  "text-(--strong)",
+];
+const SCORE_BACKGROUND_CLASSES = [
+  "bg-(--weak)",
+  "bg-(--weak)",
+  "bg-(--fair)",
+  "bg-(--good)",
+  "bg-(--strong)",
+];
 
 interface EntropyPanelProps {
-  entropy: EntropyResult | null
+  entropy: EntropyResult | null;
 }
 
 export function EntropyPanel({ entropy }: EntropyPanelProps) {
-  if (!entropy) {
-    return (
-      <div style={{
-        background: 'var(--panel)',
-        border: '1px solid var(--border)',
-        borderRadius: '12px',
-        padding: '18px 18px 20px',
-        minHeight: '170px',
-      }}>
-        <div style={{ marginBottom: '14px' }}>
-          <div style={{
-            fontSize: '11px',
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '.1em',
-            color: 'var(--text-faint)',
-          }}>Strength</div>
+  return (
+    <div className="h-42.5 rounded-xl border border-(--border) bg-(--panel) px-4.5 pb-5 pt-4.5">
+      <div className="mb-3.5">
+        <div className="text-sm font-semibold uppercase tracking-widest text-slate-300">
+          Strength
         </div>
-        <div style={{
-          color: 'var(--text-dim)',
-          fontSize: '13.5px',
-          padding: '30px 0',
-          textAlign: 'center',
-        }}>Start typing to see an analysis.</div>
       </div>
-    )
-  }
 
-  const { score, guesses, crackTimeDisplay } = entropy
+      {!entropy ? (
+        <div className="text-center text-[13.5px] text-(--text-dim)">
+          <div className="mb-3.5 flex gap-1" aria-hidden="true">
+            {[0, 1, 2, 3, 4].map((segment) => (
+              <div
+                key={segment}
+                className="h-1.5 flex-1 rounded-full bg-(--border)"
+              />
+            ))}
+          </div>
+          <p>Start typing to see an analysis.</p>
+        </div>
+      ) : (
+        <EntropyDetails entropy={entropy} />
+      )}
+    </div>
+  );
+}
+
+function EntropyDetails({ entropy }: { entropy: EntropyResult }) {
+  const { score, guesses, crackTimeDisplay } = entropy;
+  const scoreIndex = Math.max(0, Math.min(score, SCORE_LABELS.length - 1));
 
   return (
-    <div style={{
-      background: 'var(--panel)',
-      border: '1px solid var(--border)',
-      borderRadius: '12px',
-      padding: '18px 18px 20px',
-      minHeight: '170px',
-    }}>
-      <div style={{ marginBottom: '14px' }}>
-        <div style={{
-          fontSize: '11px',
-          fontWeight: 700,
-          textTransform: 'uppercase',
-          letterSpacing: '.1em',
-          color: 'var(--text-faint)',
-        }}>Strength</div>
-      </div>
-
-      <div style={{ display: 'flex', gap: '4px', marginBottom: '14px' }}>
+    <>
+      <div className="mb-3.5 flex gap-1">
         {[0, 1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            style={{
-              height: '6px',
-              flex: 1,
-              borderRadius: '99px',
-              background: i <= score ? SCORE_COLORS[score] : 'var(--border)',
-              transition: 'background 0.25s ease',
-            }}
+            className={`h-1.5 flex-1 rounded-full transition-colors duration-250 ${i <= scoreIndex ? SCORE_BACKGROUND_CLASSES[scoreIndex] : "bg-(--border)"}`}
           />
         ))}
       </div>
 
-      <div style={{
-        fontFamily: 'JetBrains Mono, monospace',
-        fontSize: '17px',
-        fontWeight: 600,
-        marginBottom: '10px',
-        color: SCORE_COLORS[score],
-      }}>
-        {SCORE_LABELS[score]}
+      <div
+        className={`mb-2.5 text-[17px] font-semibold ${SCORE_TEXT_CLASSES[scoreIndex]}`}
+      >
+        {SCORE_LABELS[scoreIndex]}
       </div>
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        fontSize: '12.5px',
-        color: 'var(--text-dim)',
-        marginBottom: '4px',
-      }}>
+      <div className="mb-1 flex justify-between text-[12.5px] text-(--text-dim)">
         <span>Estimated guesses:</span>
-        <span style={{ color: 'var(--text)', fontFamily: 'JetBrains Mono, monospace' }}>
+        <span className="font-mono text-(--text)">
           {guesses.toLocaleString()}
         </span>
       </div>
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        fontSize: '12.5px',
-        color: 'var(--text-dim)',
-        marginBottom: '12px',
-      }}>
+      <div className="mb-3 flex justify-between text-[12.5px] text-(--text-dim)">
         <span>Crack time (online, throttled):</span>
-        <span style={{ color: 'var(--text)', fontFamily: 'JetBrains Mono, monospace' }}>
-          {crackTimeDisplay}
-        </span>
+        <span className="font-mono text-(--text)">{crackTimeDisplay}</span>
       </div>
-
-    </div>
-  )
+    </>
+  );
 }

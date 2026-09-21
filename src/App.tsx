@@ -1,32 +1,82 @@
-import { useState } from 'react'
-import { PasswordInput } from './components/PasswordInput'
-import { Dashboard } from './components/Dashboard'
-import { usePasswordAnalysis } from './hooks/usePasswordAnalysis'
+import { useCallback, useEffect, useRef, useState } from "react";
+import { PasswordInput } from "./components/PasswordInput";
+import { Dashboard } from "./components/Dashboard";
+import { usePasswordAnalysis } from "./hooks/usePasswordAnalysis";
+import { generateAllVariants } from "./lib/variants/generateVerifiedVariants";
+import type { TestVerdict, VariantsState } from "./lib/types";
 
 export default function App() {
-  const [password, setPassword] = useState('')
-  const analysis = usePasswordAnalysis(password)
+  const [password, setPassword] = useState("");
+  const [variants, setVariants] = useState<VariantsState>({ status: "idle" });
+  const generationRequestRef = useRef(0);
+  const analysis = usePasswordAnalysis(password);
+
+  function handlePasswordChange(value: string) {
+    generationRequestRef.current += 1;
+    setPassword(value);
+    setVariants({ status: "idle" });
+  }
+
+  const verdict: TestVerdict =
+    !password ||
+    !analysis.entropy ||
+    analysis.breach.status === "idle" ||
+    analysis.breach.status === "checking"
+      ? "pending"
+      : analysis.entropy.score === 4 && analysis.breach.status === "safe"
+        ? "pass"
+        : "fail";
+
+  const handleRequestVariants = useCallback(async () => {
+    if (!password) return;
+
+    const requestId = ++generationRequestRef.current;
+    setVariants({ status: "generating" });
+    try {
+      const generated = await generateAllVariants(password);
+      if (requestId !== generationRequestRef.current) return;
+      setVariants({ status: "ready", variants: generated });
+    } catch {
+      if (requestId !== generationRequestRef.current) return;
+      setVariants({ status: "error" });
+    }
+  }, [password]);
+
+  useEffect(() => {
+    if (verdict !== "fail") return;
+
+    const generationTimer = window.setTimeout(() => {
+      void handleRequestVariants();
+    }, 0);
+
+    return () => window.clearTimeout(generationTimer);
+  }, [handleRequestVariants, verdict]);
+
+  const displayedVariants = !password ? { status: "idle" as const } : variants;
 
   return (
-    <div className="min-h-screen bg-base text-text" style={{ padding: '56px 20px 80px' }}>
-      <div className="mx-auto" style={{ maxWidth: '640px' }}>
-        {/* <div className="mb-3.5 inline-flex items-center gap-2" style={{ fontSize: '11px', letterSpacing: '.12em', textTransform: 'uppercase', color: 'var(--safe)', fontWeight: 600 }}>
-          <span className="inline-block w-1.5 h-1.5 rounded-full bg-safe" style={{ boxShadow: '0 0 0 3px rgba(56, 189, 248, 0.15)' }}></span>
-          Client-side only · nothing sent as plaintext
-        </div> */}
-        <h1 className="mb-2 text-2xl font-bold" style={{ letterSpacing: '-0.01em' }}>
-          Password Strength &amp; Breach Checker
-        </h1>
-        <p className="mb-8 text-text-dim" style={{ fontSize: '14.5px', lineHeight: 1.55, maxWidth: '480px' }}>
-          Real-time analysis using pattern-based entropy estimation and k-Anonymity breach lookup. Your password never leaves this device in full, in either pipeline.
-        </p>
-
-        <PasswordInput value={password} onChange={setPassword} />
+    <div className="min-h-screen bg-(--base) flex items-center text-(--text) p-5">
+      <div className="mx-auto w-270">
+        <h1 className="mb-2 text-2xl font-bold tracking-[-0.01em]">CredEval</h1>
+        {/* <p className="mt-2 flex items-start gap-2 text-[12.5px] font-semibold tracking-wide text-(--text-faint)">
+          Password Evaluator
+        </p> */}
+        <PasswordInput
+          value={password}
+          feedback={analysis.entropy?.feedback}
+          onChange={handlePasswordChange}
+        />
 
         <div className="mt-6">
-          <Dashboard entropy={analysis.entropy} breach={analysis.breach} />
+          <Dashboard
+            entropy={analysis.entropy}
+            breach={analysis.breach}
+            verdict={verdict}
+            variants={displayedVariants}
+            onRequestVariants={handleRequestVariants}
+          />
         </div>
       </div>
     </div>
-  )
+  );
 }
