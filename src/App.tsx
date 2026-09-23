@@ -27,6 +27,11 @@ export default function App() {
         ? "pass"
         : "fail";
 
+  const inputFeedback =
+    analysis.entropy?.score === 4 && analysis.breach.status === "breached"
+      ? "This password is strong but has been leaked in a breach."
+      : analysis.entropy?.feedback;
+
   const handleRequestVariants = useCallback(async () => {
     if (!password) return;
 
@@ -63,7 +68,7 @@ export default function App() {
         </p> */}
         <PasswordInput
           value={password}
-          feedback={analysis.entropy?.feedback}
+          feedback={inputFeedback}
           onChange={handlePasswordChange}
         />
 
