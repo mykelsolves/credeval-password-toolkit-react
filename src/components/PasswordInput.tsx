@@ -63,7 +63,11 @@ export function PasswordInput({
         aria-live="polite"
         className="mt-2 flex items-start gap-2 text-[12.5px] font-semibold tracking-wide text-white"
       >
-        <Info aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 animate-pulse" strokeWidth={3} />
+        <Info
+          aria-hidden="true"
+          className="mt-0.5 h-4 w-4 shrink-0 animate-pulse"
+          strokeWidth={3}
+        />
         <span>{value ? feedback : "Enter a password to analyse"}</span>
       </label>
     </div>
