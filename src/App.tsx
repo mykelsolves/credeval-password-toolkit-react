@@ -7,14 +7,27 @@ import type { TestVerdict, VariantsState } from "./lib/types";
 
 export default function App() {
   const [password, setPassword] = useState("");
+  const [credentialCopied, setCredentialCopied] = useState(false);
   const [variants, setVariants] = useState<VariantsState>({ status: "idle" });
   const generationRequestRef = useRef(0);
+  const credentialNotificationTimerRef = useRef<number | undefined>(undefined);
+  const skipNextAutomaticGenerationRef = useRef(false);
   const analysis = usePasswordAnalysis(password);
 
   function handlePasswordChange(value: string) {
     generationRequestRef.current += 1;
     setPassword(value);
     setVariants({ status: "idle" });
+  }
+
+  function handleUseGeneratedPassword(value: string) {
+    skipNextAutomaticGenerationRef.current = true;
+    handlePasswordChange(value);
+    setCredentialCopied(true);
+    window.clearTimeout(credentialNotificationTimerRef.current);
+    credentialNotificationTimerRef.current = window.setTimeout(() => {
+      setCredentialCopied(false);
+    }, 2000);
   }
 
   const verdict: TestVerdict =
@@ -49,6 +62,10 @@ export default function App() {
 
   useEffect(() => {
     if (verdict !== "fail") return;
+    if (skipNextAutomaticGenerationRef.current) {
+      skipNextAutomaticGenerationRef.current = false;
+      return;
+    }
 
     const generationTimer = window.setTimeout(() => {
       void handleRequestVariants();
@@ -79,6 +96,8 @@ export default function App() {
             verdict={verdict}
             variants={displayedVariants}
             onRequestVariants={handleRequestVariants}
+            onUsePassword={handleUseGeneratedPassword}
+            credentialCopied={credentialCopied}
           />
         </div>
       </div>

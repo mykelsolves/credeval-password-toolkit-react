@@ -11,6 +11,8 @@ interface DashboardProps extends PasswordAnalysis {
   verdict: TestVerdict;
   variants: VariantsState;
   onRequestVariants: () => void;
+  onUsePassword: (password: string) => void;
+  credentialCopied: boolean;
 }
 
 export function Dashboard({
@@ -19,6 +21,8 @@ export function Dashboard({
   verdict,
   variants,
   onRequestVariants,
+  onUsePassword,
+  credentialCopied,
 }: DashboardProps) {
   return (
     <div className="grid gap-4 sm:grid-cols-2">
@@ -32,6 +36,8 @@ export function Dashboard({
           verdict={verdict}
           variants={variants}
           onRequestVariants={onRequestVariants}
+          onUsePassword={onUsePassword}
+          credentialCopied={credentialCopied}
         />{" "}
       </div>
     </div>

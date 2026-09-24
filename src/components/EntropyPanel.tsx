@@ -68,13 +68,13 @@ function EntropyDetails({ entropy }: { entropy: EntropyResult }) {
       >
         {SCORE_LABELS[scoreIndex]}
       </div>
-      <div className="mb-1 flex justify-between text-[12.5px] text-(--text-dim)">
+      <div className="mb-1 flex justify-between text-[12.5px] text-white">
         <span>Estimated guesses:</span>
         <span className="font-mono text-(--text)">
           {guesses.toLocaleString()}
         </span>
       </div>
-      <div className="mb-3 flex justify-between text-[12.5px] text-(--text-dim)">
+      <div className="mb-3 flex justify-between text-[12.5px] text-white">
         <span>Crack time (online, throttled):</span>
         <span className="font-mono text-(--text)">{crackTimeDisplay}</span>
       </div>

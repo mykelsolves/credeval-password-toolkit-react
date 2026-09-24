@@ -6,16 +6,21 @@ interface GenerationPanelProps {
   verdict: TestVerdict;
   variants: VariantsState;
   onRequestVariants: () => void;
+  onUsePassword: (password: string) => void;
+  credentialCopied: boolean;
 }
 
 export function GenerationPanel({
   verdict,
   variants,
   onRequestVariants,
+  onUsePassword,
+  credentialCopied,
 }: GenerationPanelProps) {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   async function handleCopy(password: string, index: number) {
+    onUsePassword(password);
     await navigator.clipboard.writeText(password);
     setCopiedIndex(index);
     setTimeout(() => setCopiedIndex(null), 1500);
@@ -43,6 +48,15 @@ export function GenerationPanel({
           >
             Show me alternatives anyway
           </button>
+        )}
+        {credentialCopied && (
+          <p
+            className="mt-3 text-center text-sm font-semibold text-(--safe)"
+            role="status"
+            aria-live="polite"
+          >
+            Credential copied
+          </p>
         )}
       </div>
     );
@@ -110,6 +124,7 @@ export function GenerationPanel({
               )}
             </div>
             <button
+              type="button"
               onClick={() => handleCopy(v.password, i)}
               className="ml-3 shrink-0 rounded-md border border-(--border) px-3 py-1.5 text-xs text-slate-300 transition hover:border-(--safe) hover:text-(--safe)"
             >
