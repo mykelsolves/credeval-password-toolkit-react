@@ -3,15 +3,7 @@ import type { BreachResult } from '../types'
 
 const HIBP_RANGE_URL = 'https://api.pwnedpasswords.com/range/'
 
-/**
- * Implements the k-Anonymity breach check against the HIBP Pwned Passwords API.
- *
- * Only the first 5 characters of the SHA-1 hash are ever sent over the
- * network. HIBP returns every suffix in its database sharing that prefix
- * (typically 400-900 candidates), and the final comparison against the
- * remaining 35 characters happens locally in the browser. The full hash,
- * and therefore the password itself, never leaves the client.
- */
+
 export async function checkHIBP(password: string): Promise<BreachResult> {
   if (!password) {
     return { status: 'idle', count: 0 }

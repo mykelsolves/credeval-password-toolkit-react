@@ -79,7 +79,7 @@ export function BreachPanel({ breach }: BreachPanelProps) {
   return (
     <div className="h-42.5 rounded-xl border border-(--border) bg-(--panel) px-4.5 pb-5 pt-4.5">
       <div className="mb-3.5">
-        <div className="text-sm font-semibold uppercase tracking-widest text-slate-300">
+        <div className="text-sm font-semibold uppercase tracking-widest text-(--text-dim)">
           Breach check
         </div>
       </div>

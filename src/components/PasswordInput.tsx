@@ -61,7 +61,7 @@ export function PasswordInput({
       <label
         htmlFor="password"
         aria-live="polite"
-        className="mt-2 flex items-start gap-2 text-[12.5px] font-semibold tracking-wide text-white"
+        className="mt-2 flex items-start gap-2 text-[12.5px] font-semibold tracking-wide text-(--text)"
       >
         <Info
           aria-hidden="true"

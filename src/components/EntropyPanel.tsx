@@ -24,7 +24,7 @@ export function EntropyPanel({ entropy }: EntropyPanelProps) {
   return (
     <div className="h-42.5 rounded-xl border border-(--border) bg-(--panel) px-4.5 pb-5 pt-4.5">
       <div className="mb-3.5">
-        <div className="text-sm font-semibold uppercase tracking-widest text-slate-300">
+        <div className="text-sm font-semibold uppercase tracking-widest text-(--text-dim)">
           Strength
         </div>
       </div>
@@ -68,13 +68,13 @@ function EntropyDetails({ entropy }: { entropy: EntropyResult }) {
       >
         {SCORE_LABELS[scoreIndex]}
       </div>
-      <div className="mb-1 flex justify-between text-[12.5px] text-white">
+      <div className="mb-1 flex justify-between text-[12.5px] text-(--text-dim)">
         <span>Estimated guesses:</span>
         <span className="font-mono text-(--text)">
           {guesses.toLocaleString()}
         </span>
       </div>
-      <div className="mb-3 flex justify-between text-[12.5px] text-white">
+      <div className="mb-3 flex justify-between text-[12.5px] text-(--text-dim)">
         <span>Crack time (online, throttled):</span>
         <span className="font-mono text-(--text)">{crackTimeDisplay}</span>
       </div>

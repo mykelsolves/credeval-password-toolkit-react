@@ -15,13 +15,6 @@ const zxcvbn = new ZxcvbnFactory({
 const EXCLUDED_FEEDBACK =
   'Use longer keyboard patterns and change typing direction multiple times.'
 
-/**
- * Runs the zxcvbn pattern-decomposition engine against a raw password.
- *
- * This is the Entropy Pipeline from the system architecture: it executes
- * synchronously, entirely client-side, on every keystroke. The password
- * never leaves the browser at any point in this pipeline.
- */
 export function analyzePassword(password: string): EntropyResult | null {
   if (!password) return null
 

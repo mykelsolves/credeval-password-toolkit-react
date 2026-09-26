@@ -18,6 +18,17 @@
     --safe: #38bdf8;
   }
 
+  [data-theme="light"] {
+    --base: #f4f7fb;
+    --panel: #ffffff;
+    --panel-2: #edf2f7;
+    --border: #aeb9c8;
+    --border-soft: #c7d0dc;
+    --text: #111827;
+    --text-dim: #39475a;
+    --text-faint: #5b6879;
+  }
+
   body {
     background:
       radial-gradient(circle at 15% 0%, rgba(56, 189, 248, 0.05), transparent 40%),
@@ -28,5 +39,9 @@
     min-height: 100vh;
     margin: 0;
     padding: 0;
+  }
+
+  [data-theme="light"] {
+    color-scheme: light;
   }
 }
